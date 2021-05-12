@@ -8,7 +8,7 @@ const createTweet = async (req, res) => {
         return res.status(401).send('Not logged in');
     }
     let data = {
-        username: req.body.username,
+        username: req.session.user.username,
         text: req.body.text,
         parent: req.body.parent,
         date: Date.now()

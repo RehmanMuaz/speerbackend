@@ -13,10 +13,11 @@ express-session for session management.
 bcrypt for encryption.
 Ideally would use Oath2.0.
 
-## Usage
+# Usage
 
-### Users
-Create an account using post to `/user`.
+## Users
+### Create User
+Create an account using POST to `/user`.
 
 Request body format:
 
@@ -27,9 +28,32 @@ Request body format:
     "password": "password"
 }
 ```
+### Delete User
+Delete logged in account using DELETE to `/user`
 
-### Login
-Login using post to `/user/login`
+### Change Password
+Change password for logged in account using PUT to `/user/password`
+
+Request body format:
+```json
+{
+    "password": "password"
+}
+```
+
+### Change Username
+Change username for logged in account using PUT to `/user/username`
+
+Request body format:
+```json
+{
+    "username": "username"
+}
+```
+
+## Sessions
+### Login User
+Login using post to `/`
 
 Request body format:
 
@@ -39,9 +63,11 @@ Request body format:
     "password": "password"
 }
 ```
+### Logout User
+Logout using post to `/logout`
 
-### Tweet
-Create using post to `/tweet`
+## Tweet
+Create using POST to `/tweet`
 
 Request body format:
 

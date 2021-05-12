@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 // Get Database
 let mongo = require('../index').database;
 
-// Gets alls user **ONLY FOR TESTING**
+// Gets alls users **ONLY FOR TESTING**
 const getUser = async (req, res) => {
     let collection = mongo.collection('users');
     collection.find({}).toArray(function(err, result) {
@@ -32,7 +32,7 @@ const createUser = async (req, res) => {
   
     collection.insertOne(data, function(err) {
       if(err) {
-        res.send('Account exists for that email');
+        res.send('Account already exists');
       } else {
         res.sendStatus(200);
       }
@@ -43,8 +43,71 @@ const createUser = async (req, res) => {
   }
 };
 
+// Creates a new user
+const deleteUser = async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).send('Not logged in');
+  }  
+  let collection = mongo.collection('users');
+  try {  
+    collection.deleteOne({email: req.session.user.email}, function(err) {
+      if(err) {
+        res.send(err);
+      } else {
+        res.sendStatus(200);
+      }
+    })
+
+  } catch (err) {
+    res.send(err);
+  }
+};
+
+// Change password if user is logged in.
+const changePassword = async (req, res) => {
+
+  if (!req.session.user) {
+    return res.status(401).send('Not logged in');
+  }
+  let collection = mongo.collection('users');
+    // Hash password with salt
+  const hashed = await bcrypt.hash(req.body.password, 10);
+  console.log(req.session.user.email);
+  try {
+    collection.updateOne({_id : new ObjectID(req.session.user._id)}, {$set: { password : hashed}}), async function(err) {
+      if(err) {
+        res.send(err);
+      } else {
+        res.status(200).send('Password has been changed');
+      }
+    }
+  } catch(err) {
+    res.send(err);
+  }
+};
+
+// Change username if user is logged in. 
+const changeUsername = async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).send('Not logged in');
+  }
+  let collection = mongo.collection('users');
+
+  try {
+    collection.updateOne({_id : new ObjectID(req.session.user._id)}, {$set: { username : req.body.username }}), function(err) {
+      if(err) {
+        res.send('Username is taken');
+      } else {
+        res.status(200).send('Username has been changed');
+      }
+    }
+  } catch(err) {
+    res.send(err);
+  }
+};
+
 // Login User
-const getUserAccount = async (req, res) => {
+const loginUser = async (req, res) => {
   let collection = mongo.collection('users');
 
   collection.findOne({email: req.body.email}, async function(err, user) {
@@ -69,4 +132,4 @@ const getUserAccount = async (req, res) => {
   })
 };
 
-module.exports = { getUser, createUser, getUserAccount };
+module.exports = { getUser, createUser, changePassword, changeUsername, deleteUser, loginUser };

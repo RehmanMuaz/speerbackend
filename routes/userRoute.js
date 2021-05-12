@@ -1,17 +1,21 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const { getUser, createUser, getUserAccount } = require('../controllers/userController');
+const { getUser, createUser, changePassword, changeUsername, deleteUser } = require('../controllers/userController');
 
-router.route("/").get(async (req, res) => {  
+router.route('/').get(async (req, res) => {  
     getUser(req,res);
 }).post(async (req, res) => {   
     createUser(req,res);
+}).delete(async (req, res) => {
+    deleteUser(req, res);
 });
 
-router.route("/login").post(async (req, res) => {   
-    getUserAccount(req,res);
+router.route('/password').put(async (req, res) => {
+    changePassword(req, res);
 });
 
-//router.route("/:id").get(controller.getTagFromID).delete(controller.deleteTag).put(controller.editTag);
+router.route('/username').put(async (req, res) => {
+    changeUsername(req, res);
+});
 
 module.exports = router;
