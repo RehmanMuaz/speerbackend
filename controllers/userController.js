@@ -72,15 +72,16 @@ const changePassword = async (req, res) => {
   let collection = mongo.collection('users');
     // Hash password with salt
   const hashed = await bcrypt.hash(req.body.password, 10);
-  console.log(req.session.user.email);
+  const qry = { email : req.session.user.email };
+  const update = { $set: {password: hashed } };
   try {
-    collection.updateOne({_id : new ObjectID(req.session.user._id)}, {$set: { password : hashed}}), async function(err) {
+    collection.updateOne(qry, update, function(err) {
       if(err) {
         res.send(err);
       } else {
         res.status(200).send('Password has been changed');
       }
-    }
+    })
   } catch(err) {
     res.send(err);
   }
@@ -92,15 +93,16 @@ const changeUsername = async (req, res) => {
     return res.status(401).send('Not logged in');
   }
   let collection = mongo.collection('users');
-
+  const qry = { email : req.session.user.email };
+  const update = { $set: {username: req.body.username } };
   try {
-    collection.updateOne({_id : new ObjectID(req.session.user._id)}, {$set: { username : req.body.username }}), function(err) {
+    collection.updateOne(qry, update, function(err) {
       if(err) {
         res.send('Username is taken');
       } else {
         res.status(200).send('Username has been changed');
       }
-    }
+    })
   } catch(err) {
     res.send(err);
   }

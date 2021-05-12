@@ -32,10 +32,9 @@ const loginUser = async (req, res) => {
   const logoutUser = async (req, res) => {
     req.session.destroy(function(err) {
       if(err) {
-          console.log(err);
           res.send(err);
       } else {
-          res.status(200).send();
+          res.status(200).send('Logged Out');
       }
   });
   };
